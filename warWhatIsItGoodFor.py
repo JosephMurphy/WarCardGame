@@ -171,7 +171,18 @@ def war(playerCard, computerCard, playerNumberCard, computerNumberCard, playerDe
 			playerWarCard = playerDeck[len(playerDeck) - 1]
 			del playerDeck[len(playerDeck) - 1]
 			smallestDeck = 0
-			
+		else:
+			while smallestDeck > 1:
+				playerWarHand.append(playerDeck[smallestDeck - 1])
+				del playerDeck[smallestDeck - 1]
+				computerWarHand.append(computerDeck[smallestDeck - 1])
+				del computerDeck[smallestDeck - 1]
+				smallestDeck -= 1
+			playerWarCard = playerDeck[smallestDeck - 1]
+			del playerDeck[smallestDeck - 1]
+			computerWarCard = computerDeck[smallestDeck - 1]
+			del computerDeck[smallestDeck - 1]
+			smallestDeck = 0
 		
 		playerNumberWarCard = checkForFaceCard(playerWarCard)
 		computerNumberWarCard = checkForFaceCard(computerWarCard)
@@ -224,10 +235,8 @@ def checkForFaceCard(card):
 	
 #checks to see if the game is over or not
 def isGameOver(playerDeck, computerDeck, playerDiscard, computerDiscard, gameOver):
-	if (len(playerDeck) !=0 and len(playerDiscard) != 0) and (len(computerDeck) != 0 and len(computerDiscard) != 0):
-		gameOver = False
-		return gameOver
-	elif (len(playerDeck) == 0 and len(playerDiscard) == 0):
+
+	if (len(playerDeck) == 0 and len(playerDiscard) == 0):
 		gameOver = True
 		print "You lost the game!"
 		return gameOver
@@ -235,13 +244,25 @@ def isGameOver(playerDeck, computerDeck, playerDiscard, computerDiscard, gameOve
 		gameOver = True
 		print "You WON the game! Hurray!"
 		return gameOver
+	else:
+		gameOver = False
+		print "Keep playing!"
+		return gameOver
 
 #place the discard pile into the playing deck
 def discardIntoDeck(playerDeck, computerDeck, playerDiscard, computerDiscard):
-	playerDeck = playerDiscard
+	"""playerDeck = playerDiscard
 	playerDiscard = []
 	computerDeck = computerDiscard
-	computerDiscard = []
+	computerDiscard = []"""
+	
+	#check to see if the player still has cards
+	if len(playerDeck) == 0:
+		playerDeck = playerDiscard
+		playerDiscard = []
+	elif len(computerDeck) == 0:
+		computerDeck = computerDiscard
+		computerDiscard = []
 	
 	return playerDeck, computerDeck, playerDiscard, computerDiscard
 		
@@ -249,10 +270,10 @@ def discardIntoDeck(playerDeck, computerDeck, playerDiscard, computerDiscard):
 def main():
 	#defining an unshuffled deck
 	originalDeck = [2,2,2,2,3,3,3,3,4,4,4,4,5,5,5,5,6,6,6,6,7,7,7,7,8,8,8,8,9,9,9,9,10,10,10,10,'J','J','J','J','Q','Q','Q','Q','K','K','K','K','A','A','A','A']
-	print originalDeck
+	#print originalDeck
 	#creating a new deck
 	newDeck = shuffleDeck(originalDeck)
-	print newDeck
+	#print newDeck
 	
 	#Deal cards to the player and computer.  This involves creating two arrays of cards
 	playerDeck, computerDeck = dealCard(newDeck)
@@ -270,12 +291,14 @@ def main():
 		playerDeck, computerDeck, playerDiscard, computerDiscard = compareCards(playerDeck, computerDeck, playerDiscard, computerDiscard)
 		#check to see if the game is over or not
 		if isGameOver(playerDeck, computerDeck, playerDiscard, computerDiscard, gameOver) == True:
-			break
+			gameOver = True
 		else:
 			#place the cards in the discard in the playing deck
 			playerDeck, computerDeck, playerDiscard, computerDiscard = discardIntoDeck(playerDeck, computerDeck, playerDiscard, computerDiscard)
 			print playerDeck
 			print computerDeck
+			print "Total cards for the player: " + str(len(playerDeck) + len(playerDiscard))
+			print "Total cards for the computer: " +str(len(computerDeck) + len(computerDiscard))
 	
 	
 
