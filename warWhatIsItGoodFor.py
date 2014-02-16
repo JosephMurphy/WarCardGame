@@ -16,8 +16,6 @@ def shuffleDeck(cardDeck):
 	return newCardDeck
 		
 	
-	
-
 #deal the cards to the player and computer
 def dealCard(cardDeck):
 	playerDeck = []
@@ -35,10 +33,21 @@ def dealCard(cardDeck):
 	return playerDeck, computerDeck
 
 def compareCards(playerDeck, computerDeck, playerDiscard, computerDiscard):
-	#keep playing until one player has no more cards in their main deck
-	while len(playerDeck) > 0 or len(computerDeck) > 0:
+	#assign a variable the value of the smallest deck
+	smallestDeck = 0
+	if len(playerDeck) > len(computerDeck):
+		smallestDeck = len(computerDeck)
+	elif len(playerDeck) < len(playerDeck):
+		smallestDeck = len(computerDeck)
+	else:
+		smallestDeck = len(playerDeck)
 	
+	#keep playing until one player has no more cards in their main deck
+	while smallestDeck > 0:	
 		#assign the player cards
+		print len(playerDeck)
+		print len(computerDeck)
+		print smallestDeck
 		playerCard = playerDeck[len(playerDeck)-1]
 		computerCard = computerDeck[len(computerDeck)-1]
 		#delete the cards from their decks
@@ -50,29 +59,36 @@ def compareCards(playerDeck, computerDeck, playerDiscard, computerDiscard):
 		#check if the player cards are face cards or not
 		playerNumberCard = checkForFaceCard(playerCard)
 		computerNumberCard = checkForFaceCard(computerCard)
-
+		#decrease the smallest deck by 1
+		smallestDeck -= 1
 		if playerNumberCard > computerNumberCard:
 			print "You win this battle!"
 			#the player won, so add both their card and the computer's card to their discard
 			playerDiscard.append(playerCard)
-			playerDiscard.append(computerCard)
+			playerDiscard.append(computerCard)	
 
 		elif playerNumberCard < computerNumberCard:
 			print "You lost this battle D:"
 			#the computer wins, so add both cards to the computer's discard
 			computerDiscard.append(playerCard)
-			computerDiscard.append(computerCard)
+			computerDiscard.append(computerCard)			
 
 		elif playerNumberCard == computerNumberCard:
-			print "Its a tie! This means WAR! \n\n\n"
-			war(playerCard, computerCard, playerNumberCard, computerNumberCard, playerDeck, computerDeck, playerDiscard, computerDiscard)
+			print "\nIts a tie! This means WAR!\n"
+			playerDeck, computerDeck, playerDiscard, computerDiscard, smallestDeck = war(playerCard, computerCard, playerNumberCard, computerNumberCard, playerDeck, computerDeck, playerDiscard, computerDiscard, smallestDeck)		
+		
+	#print playerDiscard
+	#print computerDiscard
 	
-	print playerDiscard
-	print computerDiscard
+	return playerDeck, computerDeck, playerDiscard, computerDiscard
 	
 
 #For ties, perform the W-A-R actions
-def war(playerCard, computerCard, playerNumberCard, computerNumberCard, playerDeck, computerDeck, playerDiscard, computerDiscard):
+def war(playerCard, computerCard, playerNumberCard, computerNumberCard, playerDeck, computerDeck, playerDiscard, computerDiscard, smallestDeck):
+	#check to see if the smallest deck is at 0.  If it is, place discard into the playing deck
+	if smallestDeck == 0:
+		playerDeck, computerDeck, playerDiscard, computerDiscard = discardIntoDeck(playerDeck, computerDeck, playerDiscard, computerDiscard)
+	
 	#first, make sure the players have enough cards for a regular WAR (4)
 	if len(playerDeck) > 4 and len(computerDeck) > 4:
 		#create the "WAR hands", the cards that are burned during the war
@@ -93,6 +109,72 @@ def war(playerCard, computerCard, playerNumberCard, computerNumberCard, playerDe
 		#check for face cards
 		playerNumberWarCard = checkForFaceCard(playerWarCard)
 		computerNumberWarCard = checkForFaceCard(computerWarCard)
+		#decrease the smallest deck by 4
+		smallestDeck -= 3
+		if playerNumberWarCard > computerNumberWarCard:
+			print "You win this battle of WAR!"
+			#the player won, so add both their card and the computer's card to their discard
+			playerDiscard.append(playerCard)
+			playerDiscard.append(computerCard)
+			
+			#append the WAR hands
+			for card in playerWarHand:
+				playerDiscard.append(card)
+			for card in computerWarHand:
+				playerDiscard.append(card)
+			
+		elif playerNumberWarCard < computerNumberWarCard:
+			print "You lost this battle of WAR D:"
+			#the computer wins, so add both cards to the computer's discard
+			computerDiscard.append(playerCard)
+			computerDiscard.append(computerCard)
+			
+			#append the WAR hands
+			for card in playerWarHand:
+				computerDiscard.append(card)
+			for card in computerWarHand:
+				computerDiscard.append(card)
+			
+		elif playerNumberWarCard == computerNumberWarCard:
+			print "Its a tie! This means WAR, AGAIN!"
+			playerDeck, computerDeck, playerDiscard, computerDiscard, smallestDeck = war(playerCard, computerCard, playerNumberCard, playerNumberCard, playerDeck, computerDeck, playerDiscard, computerDiscard, smallestDeck)
+			
+	else: #when there are less than 4 cards for WAR, use the length of the smallest deck -1 for the war hand, last card for WAR card
+		#Assign variable for WAR hands
+		playerWarHand = []
+		computerWarHand = []
+		
+		#determine which deck has the smallest number of cards, then create the war hands
+		if len(playerDeck) == smallestDeck:
+			while smallestDeck > 1:
+				playerWarHand.append(playerDeck[smallestDeck - 1])
+				del playerDeck[smallestDeck - 1]
+				computerWarHand.append(computerDeck[len(computerDeck)-1])
+				del computerDeck[len(computerDeck)-1]
+				smallestDeck -= 1
+			#create the WAR cards
+			playerWarCard = playerDeck[smallestDeck - 1]
+			del playerDeck[smallestDeck - 1]
+			computerWarCard = computerDeck[len(computerDeck) - 1]
+			del computerDeck[len(computerDeck) - 1]
+			smallestDeck = 0
+		elif len(computerDeck) == smallestDeck:
+			while smallestDeck > 1:
+				computerWarHand.append(computerDeck[smallestDeck - 1])
+				del computerDeck[smallestDeck - 1]
+				playerWarHand.append(playerDeck[len(playerDeck)-1])
+				del playerDeck[len(playerDeck)-1]
+				smallestDeck -= 1
+			#create the WAR cards
+			computerWarCard = computerDeck[smallestDeck - 1]
+			del computerDeck[smallestDeck - 1]
+			playerWarCard = playerDeck[len(playerDeck) - 1]
+			del playerDeck[len(playerDeck) - 1]
+			smallestDeck = 0
+			
+		
+		playerNumberWarCard = checkForFaceCard(playerWarCard)
+		computerNumberWarCard = checkForFaceCard(computerWarCard)
 		
 		if playerNumberWarCard > computerNumberWarCard:
 			print "You win this battle of WAR!"
@@ -106,7 +188,6 @@ def war(playerCard, computerCard, playerNumberCard, computerNumberCard, playerDe
 			for card in computerWarHand:
 				playerDiscard.append(card)
 			
-
 		elif playerNumberWarCard < computerNumberWarCard:
 			print "You lost this battle of WAR D:"
 			#the computer wins, so add both cards to the computer's discard
@@ -118,12 +199,13 @@ def war(playerCard, computerCard, playerNumberCard, computerNumberCard, playerDe
 				computerDiscard.append(card)
 			for card in computerWarHand:
 				computerDiscard.append(card)
-
+			
 		elif playerNumberWarCard == computerNumberWarCard:
 			print "Its a tie! This means WAR, AGAIN!"
-			war(playerCard, computerCard, playerNumberCard, playerNumberCard, playerDeck, computerDeck, playerDiscard, computerDiscard)
+			playerDeck, computerDeck, playerDiscard, computerDiscard, smallestDeck = war(playerCard, computerCard, playerNumberCard, playerNumberCard, playerDeck, computerDeck, playerDiscard, computerDiscard, smallestDeck)
 		
-	return  playerDeck, computerDeck, playerDiscard, computerDiscard
+		
+	return  playerDeck, computerDeck, playerDiscard, computerDiscard, smallestDeck
 		
 	
 
@@ -140,7 +222,29 @@ def checkForFaceCard(card):
 			card = 14
 	return card
 	
+#checks to see if the game is over or not
+def isGameOver(playerDeck, computerDeck, playerDiscard, computerDiscard, gameOver):
+	if (len(playerDeck) !=0 and len(playerDiscard) != 0) and (len(computerDeck) != 0 and len(computerDiscard) != 0):
+		gameOver = False
+		return gameOver
+	elif (len(playerDeck) == 0 and len(playerDiscard) == 0):
+		gameOver = True
+		print "You lost the game!"
+		return gameOver
+	elif (len(computerDeck) == 0 and len(computerDiscard) == 0):
+		gameOver = True
+		print "You WON the game! Hurray!"
+		return gameOver
 
+#place the discard pile into the playing deck
+def discardIntoDeck(playerDeck, computerDeck, playerDiscard, computerDiscard):
+	playerDeck = playerDiscard
+	playerDiscard = []
+	computerDeck = computerDiscard
+	computerDiscard = []
+	
+	return playerDeck, computerDeck, playerDiscard, computerDiscard
+		
 
 def main():
 	#defining an unshuffled deck
@@ -158,8 +262,20 @@ def main():
 	#create discard piles for the player and computer
 	playerDiscard = []
 	computerDiscard = []
-	
-	compareCards(playerDeck, computerDeck, playerDiscard, computerDiscard)
+	#bool variable to keep track of if the game is over or not
+	gameOver = False
+	#while (len(playerDeck) !=0 and len(playerDiscard) != 0) or (len(computerDeck) != 0 and len(computerDiscard) != 0):
+	while gameOver == False:
+		#play one round
+		playerDeck, computerDeck, playerDiscard, computerDiscard = compareCards(playerDeck, computerDeck, playerDiscard, computerDiscard)
+		#check to see if the game is over or not
+		if isGameOver(playerDeck, computerDeck, playerDiscard, computerDiscard, gameOver) == True:
+			break
+		else:
+			#place the cards in the discard in the playing deck
+			playerDeck, computerDeck, playerDiscard, computerDiscard = discardIntoDeck(playerDeck, computerDeck, playerDiscard, computerDiscard)
+			print playerDeck
+			print computerDeck
 	
 	
 
