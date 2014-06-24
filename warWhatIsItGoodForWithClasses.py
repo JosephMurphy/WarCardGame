@@ -173,7 +173,7 @@ def war():
 		if shortestDeck > 1:
 			#create the pile
 			i = 0
-			while i < (shortestDeck - 10:
+			while i < (shortestDeck - 1):
 				player.warCardPile.append(player.deck[i])
 				computer.warCardPile.append(computer.deck[i])
 			
@@ -253,17 +253,15 @@ def checkForFaceCard(card):
 #The game is over when one of the playing decks has no more cards. This function checks to see if either deck has cars remaining.			
 def isGameOver(gameOver):
 	if (len(player.deck) == 0):
-        gameOver = True
-        print "You lost the game!"
-        return gameOver
+		gameOver = True
+		print "You lost the game. Feel bad about it."
     elif (len(computer.deck) == 0):
         gameOver = True
         print "You WON the game! Hurray!"
-        return gameOver
     else:
         gameOver = False
         print "Keep playing!"
-        return gameOver
+    return gameOver
 	
 def main():
 	#defining an unshuffled deck in a list
