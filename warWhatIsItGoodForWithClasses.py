@@ -53,14 +53,19 @@ def compareCards():
 		#First, check to make sure the game is not over
 		if isGameOver(gameOver) == True:
 			gameOver = True
+			break
 
 		#draw the playing cards from the decks.
 		player.playingCard = player.deck[0]
 		computer.playingCard = computer.deck[0]
+		
+		#Print # of cards remaining for debugging purposes
+		print "Player has " + str(len(player.deck)) + " cards remaining"
+		print "Computer has " + str(len(computer.deck)) + " cards remaining"
 	
 		#Display the cards to the player
-		print "You play: " + player.playingCard
-		print "The computer plays: " + computer.playingCard
+		print "You play: " + str(player.playingCard)
+		print "The computer plays: " + str(computer.playingCard)
 	
 		#remove the playing cards from the players' decks
 		del player.deck[0]
@@ -87,10 +92,14 @@ def compareCards():
 		elif playerNumberCard == computerNumberCard:
 			print "\nIts a tie! This means WAR!\n"	
 			war()
+		#Print # of cards remaining for debugging purposes
+		print "Player has " + str(len(player.deck)) + " cards remaining"
+		print "Computer has " + str(len(computer.deck)) + " cards remaining"
+
 
 def war():
 	#first, make sure that the players have enough remaining cards in their deck for a regular game of WAR (4)
-	if len(player.deck) > 4 and len(computer.deck) > 4:
+	if len(player.deck) >= 4 and len(computer.deck) >= 4:
 		#create the "WAR hands", the cards that are burned during the war. This is done by adding them to the .warCardPile
 		i = 0
 		while i < 3:
@@ -106,10 +115,18 @@ def war():
 			del computer.deck[0]
 			
 			i += 1
-			
+		
+		#Remember to add the previous playing card to the warCardPile, otherwise it will be lost in the either
+		player.warCardPile.append(player.playingCard)
+		computer.warCardPile.append(computer.playingCard)
+		
 		#Now draw each players' playing card for the WAR
 		player.playingCard = player.deck[0]
 		computer.playingCard = computer.deck[0]
+		
+		#Display the cards to the player
+		print "You play: " + str(player.playingCard)
+		print "The computer plays: " + str(computer.playingCard)
 		
 		#remove the playing cards from the deck
 		del player.deck[0]
@@ -155,89 +172,102 @@ def war():
 		#There is a tie DOUBLE WAR
 		if playerNumberCard == computerNumberCard:
 			print "Its a tie! This means ANOTHER WAR (Oh the humanity!)"
-			#Add the playing cards to their respective warCardPiles so they are not lost in the ether when re-running the war() function
-			player.warCardPile.append(player.playingCard)
-			computer.warCardPile.append(computer.playingCard)
 			war()
 	#If one player does not have enough cards for a full WAR, draw so their last remaining card is their playing card
 	else:
 		#check to see which deck has the least amount of cards
+		shortestDeck = 0
 		if len(player.deck) > len(computer.deck):
 			shortestDeck = len(computer.deck)
 		elif len(player.deck) < len(computer.deck):
 			shorestDeck = len(player.deck)
 		else:
 			shortestDeck = len(player.deck)
-		
+		#printing length of shortest deck for debugging purposes
+		print "The shortest deck is " + str(shortestDeck) + " cards."
 		#Create the warCardPiles based on the shortest deck length. do this only if the shortest deck length is greater than 1
 		if shortestDeck > 1:
 			#create the pile
 			i = 0
-			while i < (shortestDeck - 1):
+			while i < (shortestDeck - 2):
 				player.warCardPile.append(player.deck[i])
 				computer.warCardPile.append(computer.deck[i])
 			
 				i += 1
 			#remove the cards in the pile from the deck
 			i = 0
-			while i < (shortestDeck - 1):
+			while i < (shortestDeck - 2):
 				del player.deck[i]
 				del computer.deck[i]
 			
 				i += 1
-		#Now draw each players' playing card for the WAR
-		player.playingCard = player.deck[0]
-		computer.playingCard = computer.deck[0]
 		
-		#remove the playing cards from the deck
-		del player.deck[0]
-		del computer.deck[0]
-		
-		#Check if the playing card is a face card or not. If it is, assign the card a numerical value. Creating new variable player/computerNumberCard for comparisons.
-		playerNumberCard = checkForFaceCard(player.playingCard)
-		computerNumberCard = checkForFaceCard(computer.playingCard)
-		
-		#Begin comparing the cards
-		#The player wins
-		if playerNumberCard > computerNumberCard:
-			print "You win this battle of WAR!"
-			#Add the playing cards to the player's deck
-			player.deck.append(player.playingCard)
-			player.deck.append(computer.playingCard)
-			#Add the warCardPiles to the player's deck
-			for card in player.warCardPile:
-				player.deck.append(card)
-			for card in computer.warCardPile:
-				player.deck.append(card)
-			
-			#reset the warCardPiles for the next game of war
-			player.warCardPile = []
-			computer.warCardPile = []
-			
-		#The computer wins
-		if playerNumberCard < computerNumberCard:
-			print "You lost this battle of WAR D:"
-			#Add the playing cards to the computer's deck
-			computer.deck.append(player.playingCard)
-			computer.deck.append(computer.playingCard)
-			#Add the warCardPiles to the computer's deck
-			for card in player.warCardPile:
-				computer.deck.append(card)
-			for card in computer.warCardPile:
-				computer.deck.append(card)
-				
-			#reset the warCardPiles for the next game of war
-			player.warCardPile = []
-			computer.warCardPile = []
-
-		#There is a tie DOUBLE WAR
-		if playerNumberCard == computerNumberCard:
-			print "Its a tie! This means ANOTHER WAR (Oh the humanity!)"
-			#Add the playing cards to their respective warCardPiles so they are not lost in the ether when re-running the war() function
+			#Remember to add the previous playing card to the warCardPile, otherwise it will be lost in the either
 			player.warCardPile.append(player.playingCard)
 			computer.warCardPile.append(computer.playingCard)
-			war()
+		
+			#Now draw each players' playing card for the WAR
+			player.playingCard = player.deck[0]
+			computer.playingCard = computer.deck[0]
+			
+			#Display the cards to the player
+			print "You play: " + str(player.playingCard)
+			print "The computer plays: " + str(computer.playingCard)
+			
+			#remove the playing cards from the deck
+			del player.deck[0]
+			del computer.deck[0]
+		
+			#Check if the playing card is a face card or not. If it is, assign the card a numerical value. Creating new variable player/computerNumberCard for comparisons.
+			playerNumberCard = checkForFaceCard(player.playingCard)
+			computerNumberCard = checkForFaceCard(computer.playingCard)
+		
+			#Begin comparing the cards
+			#The player wins
+			if playerNumberCard > computerNumberCard:
+				print "You win this battle of WAR!"
+				#Add the playing cards to the player's deck
+				player.deck.append(player.playingCard)
+				player.deck.append(computer.playingCard)
+				#Add the warCardPiles to the player's deck
+				for card in player.warCardPile:
+					player.deck.append(card)
+				for card in computer.warCardPile:
+					player.deck.append(card)
+			
+				#reset the warCardPiles for the next game of war
+				player.warCardPile = []
+				computer.warCardPile = []
+			
+			#The computer wins
+			if playerNumberCard < computerNumberCard:
+				print "You lost this battle of WAR D:"
+				#Add the playing cards to the computer's deck
+				computer.deck.append(player.playingCard)
+				computer.deck.append(computer.playingCard)
+				#Add the warCardPiles to the computer's deck
+				for card in player.warCardPile:
+					computer.deck.append(card)
+				for card in computer.warCardPile:
+					computer.deck.append(card)
+				
+				#reset the warCardPiles for the next game of war
+				player.warCardPile = []
+				computer.warCardPile = []
 
+			#There is a tie DOUBLE WAR
+			if playerNumberCard == computerNumberCard:
+				print "Its a tie! This means ANOTHER WAR (Oh the humanity!)"
+				war()
+		elif shortestDeck == 1:
+			#fix later
+			
+		elif shortestDeck == 0:
+			if len(player.deck) > len(computer.deck):
+				print
+			elif len(player.deck) < len(computer.deck):
+				shorestDeck = len(player.deck)
+		
 def checkForFaceCard(card):
 	if isinstance(card, int) == False:
 		if card == 'J':
@@ -255,13 +285,15 @@ def isGameOver(gameOver):
 	if (len(player.deck) == 0):
 		gameOver = True
 		print "You lost the game. Feel bad about it."
-    elif (len(computer.deck) == 0):
-        gameOver = True
-        print "You WON the game! Hurray!"
-    else:
-        gameOver = False
-        print "Keep playing!"
-    return gameOver
+		return gameOver
+	elif (len(computer.deck) == 0):
+		gameOver = True
+		print "You won the game. Hurray!"
+		return gameOver
+	else:
+		gameOver = False
+		print "Keep playing!"
+		return gameOver   
 	
 def main():
 	#defining an unshuffled deck in a list
